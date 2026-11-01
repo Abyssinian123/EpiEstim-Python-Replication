@@ -218,3 +218,10 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Estimation cache (regenerable; delete to force re-estimation)
+_est_cache/
+
+# Temporary debug files
+.tmp_*
+debug_stream.bin
