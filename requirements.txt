@@ -1,0 +1,9 @@
+# Python replication of Nash et al. (2023) — tested versions
+numpy>=1.24
+pandas>=2.0
+scipy>=1.10
+matplotlib>=3.7
+pyreadr>=0.4
+# Only needed by the validation scripts (validate_loess_vs_pdf.py,
+# decode_weekend_pdf.py, extract_loess_pdf.py), not by the replication itself:
+pdfplumber>=0.10
