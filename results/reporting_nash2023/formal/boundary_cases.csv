@@ -1,0 +1,4 @@
+case,true_case_total,daily_status,em_status,error_type,error,daily_rows,em_rows,em_reconstructed_cases,em_weekly_max_error
+all_zero,0,ok,ok,,,63,57,0.0,0.0
+extinct_after_seed,7,ok,ok,,,63,57,6.999999999999998,1.7763568394002505e-15
+low_counts,77,ok,ok,,,63,57,77.0,1.7763568394002505e-15

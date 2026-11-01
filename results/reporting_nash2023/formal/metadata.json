@@ -1,0 +1,125 @@
+{
+  "status": "formal 100-trajectory experiment",
+  "rt_scenario": "constant_1.25",
+  "true_rt": 1.25,
+  "true_rt_definition": "Constant transmission Rt supplied to A's simulate_incidence for all 70 returned days; the 7 initial historical seed days are excluded from those 70 days.",
+  "n_sim": 100,
+  "n_days": 70,
+  "dt": 7,
+  "dt_out": 7,
+  "epidemic_seed": 6,
+  "reporting_seeds": {
+    "S0": 4100,
+    "S1": 4101,
+    "S2": 4102,
+    "S3": 4103
+  },
+  "reporting_seed_policy": "Independent fixed Generator seed per reporting scenario; all scenarios use the same true-incidence matrix.",
+  "mean_si": 3.6,
+  "std_si": 1.6,
+  "simulation_si": "A discr_si(0:30), normalized and w0 removed.",
+  "estimation": {
+    "method": "parametric_si",
+    "iter": 10,
+    "tol": 1e-06,
+    "recon_opt": "match",
+    "si_variant": "distcrete",
+    "window_alignment": "Daily estimate_R is evaluated on the exact t_start/t_end pairs returned by estimate_R_agg."
+  },
+  "formal_engine_commit": "079c67a",
+  "formal_engine_sha256": "4DB99C1179E2B6BCAC4C287D8E89E5F928CD85206C07F3C3C99175826EF242C8",
+  "versions": {
+    "python": "3.12.4",
+    "numpy": "2.3.5",
+    "pandas": "2.3.3",
+    "scipy": "1.16.3",
+    "matplotlib": "3.10.8"
+  },
+  "simulation_batch_seconds": 0.026626900071278214,
+  "total_elapsed_seconds": 262.8356088998262,
+  "scenario_diagnostics": {
+    "S0": {
+      "scenario_elapsed_seconds": 52.73637790000066,
+      "true_incidence_sha256": "0b00a2d3de963cf5ebbadae8247706445a696e7d440a44745aef468da0379087",
+      "observed_incidence_sha256": "037f5fc6f9866abbdc359bf1b79e705bfc63028dde9a2940a2ea6a41d3c39d7e",
+      "all_simulations_share_same_truth": true
+    },
+    "S1": {
+      "scenario_elapsed_seconds": 70.43045560014434,
+      "true_incidence_sha256": "0b00a2d3de963cf5ebbadae8247706445a696e7d440a44745aef468da0379087",
+      "observed_incidence_sha256": "823fd5c4c6501f77d868d10914f907349285800cd39b18db83202d10a53d478f",
+      "all_simulations_share_same_truth": true
+    },
+    "S2": {
+      "scenario_elapsed_seconds": 67.85723399999551,
+      "true_incidence_sha256": "0b00a2d3de963cf5ebbadae8247706445a696e7d440a44745aef468da0379087",
+      "observed_incidence_sha256": "b0f3e18795c1b659f86648421fb6598c0593c1b37def80f77b35e823d07f02a7",
+      "all_simulations_share_same_truth": true
+    },
+    "S3": {
+      "scenario_elapsed_seconds": 69.36401539994404,
+      "true_incidence_sha256": "0b00a2d3de963cf5ebbadae8247706445a696e7d440a44745aef468da0379087",
+      "observed_incidence_sha256": "7a4f98dc54f0b772d4b6f83195cf04629fff15a2020a6fe4d9e246b3b3ba6402",
+      "all_simulations_share_same_truth": true
+    }
+  },
+  "run_counts": {
+    "ok": 400
+  },
+  "boundary_case_diagnostics": [
+    {
+      "case": "all_zero",
+      "true_case_total": 0,
+      "daily_status": "ok",
+      "em_status": "ok",
+      "error_type": "",
+      "error": "",
+      "daily_rows": 63,
+      "em_rows": 57,
+      "em_reconstructed_cases": 0.0,
+      "em_weekly_max_error": 0.0
+    },
+    {
+      "case": "extinct_after_seed",
+      "true_case_total": 7,
+      "daily_status": "ok",
+      "em_status": "ok",
+      "error_type": "",
+      "error": "",
+      "daily_rows": 63,
+      "em_rows": 57,
+      "em_reconstructed_cases": 6.999999999999998,
+      "em_weekly_max_error": 1.7763568394002505e-15
+    },
+    {
+      "case": "low_counts",
+      "true_case_total": 77,
+      "daily_status": "ok",
+      "em_status": "ok",
+      "error_type": "",
+      "error": "",
+      "daily_rows": 63,
+      "em_rows": 57,
+      "em_reconstructed_cases": 77.0,
+      "em_weekly_max_error": 1.7763568394002505e-15
+    }
+  ],
+  "outputs": [
+    "S0.npz",
+    "S1.npz",
+    "S2.npz",
+    "S3.npz",
+    "estimates_all.csv",
+    "estimates_daily.csv",
+    "estimates_weekly_em.csv",
+    "run_status.csv",
+    "boundary_cases.csv",
+    "rt_estimates.png",
+    "formal_check_report.md"
+  ],
+  "reproducibility_check": {
+    "passed": true,
+    "method": "The formal runner regenerated 100 truth trajectories and each scenario observation matrix from the recorded seeds and compared arrays exactly.",
+    "estimation": "The estimation engine is deterministic for fixed inputs and options."
+  }
+}

@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from epiestim.engine import discr_si, estimate_R, estimate_R_agg, simulate_incidence
+from epiestim import discr_si, estimate_R, estimate_R_agg, simulate_incidence
 from epiestim.reporting import aggregate_incidence, apply_reporting, make_reporting_rates
 
 N_DAYS = 70
@@ -24,7 +24,7 @@ TRUE_RT = 1.25  # Current pilot setting; pending full-team confirmation.
 EPIDEMIC_SEED = 6
 REPORTING_SEEDS = {"S0": 4100, "S1": 4101, "S2": 4102, "S3": 4103}
 SCENARIOS = ("S0", "S1", "S2", "S3")
-ENGINE_SOURCE_SHA256 = "CEA5D440D554BB1C2DEAE1E372DFBA478EF91698F7B184BFF7238A14D1E1909B"
+ENGINE_SOURCE_SHA256 = "4DB99C1179E2B6BCAC4C287D8E89E5F928CD85206C07F3C3C99175826EF242C8"
 R_COLUMNS = [
     "t_start", "t_end", "Mean(R)", "Std(R)",
     "Quantile.0.025(R)", "Quantile.0.05(R)", "Quantile.0.25(R)",
@@ -232,7 +232,7 @@ def run_pilot(output_dir=None, n_sim=10):
         "versions": {"python": platform.python_version(), "numpy": np.__version__,
                       "pandas": pd.__version__, "scipy": _pkg_version("scipy"),
                       "matplotlib": matplotlib.__version__},
-        "engine_source": "A package python_reproduction/epiestim.py, temporarily vendored unchanged as src/epiestim/nash2023_engine.py",
+        "engine_source": "Team formal src/epiestim/epiestim.py from A commit 079c67a; imported via src/epiestim/__init__.py",
         "engine_source_sha256": ENGINE_SOURCE_SHA256,
         "true_rt_field": "Constant value supplied to simulate_incidence; no per-day Rt return is provided by A's function.",
         "elapsed_seconds": time.perf_counter() - started,
@@ -248,8 +248,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--validate-only", action="store_true")
     parser.add_argument("--n-sim", type=int, default=10)
+    parser.add_argument("--output-dir")
     args = parser.parse_args()
-    root = Path(__file__).resolve().parents[2] / "results" / "reporting_nash2023" / "pilot"
+    root = Path(args.output_dir) if args.output_dir else (
+        Path(__file__).resolve().parents[2] / "results" / "reporting_nash2023" / "pilot")
     root.mkdir(parents=True, exist_ok=True)
     check = validate_small_scale()
     check["audit"].to_csv(root / "three_trajectory_validation.csv", index=False)
