@@ -33,24 +33,64 @@ Three undergraduate students working collaboratively on model replication, simul
 ```
 ├── src/epiestim/              # Core engine: estimate_R, estimate_R_agg (EM),
 │                              #   aggregate_inc, discr_si, simulate_incidence,
-│                              #   loess.py (port of R's loess), rds_reader.py
+│                              #   loess.py (port of R's loess), rds_reader.py,
+│                              #   reporting.py (Binomial thinning + weekly aggregation)
 ├── experiments/replication/   # Full replication of the paper
 │   ├── reproduce_paper.py     #   Figures 2-4 (flu / covid cases / covid deaths)
 │   ├── sim_study.py           #   All 10 S1 Appendix studies + supplementary analyses
 │   ├── validate_vs_R.py       #   engine vs the paper's stored RDS results (≤ 1e-14)
 │   ├── validate_loess_vs_pdf.py  # LOESS pipeline vs the paper's PDF vector curves
 │   └── test_si_variant.py     #   serial-interval discretisation variants
+├── experiments/extension/     # Reporting-model robustness simulation (Nash 2023)
+│   ├── run_reporting_nash2023_pilot.py    #   small-scale pilot (10 trajectories)
+│   ├── run_reporting_nash2023_formal.py   #   100-trajectory formal run (S0–S3)
+│   ├── run_reporting_experiments.py       #   per-scenario entry point
+│   └── constant_reporting.py / sudden_change.py / gradual_change.py
+├── experiments/analysis/      # Statistical evaluation (bias / RMSE / coverage)
+│   ├── analyze_reporting.py   #   figures + tables for S0–S3
+│   ├── stat_metrics.py        #   shared metric + summary helpers
+│   └── robustness_constant_p.py  # constant-underreporting sweep (20/40/60%)
 ├── EM_EpiEstim_Nash2023-main/ # Original R implementation (data + stored results
 │                              #   used as the validation benchmark; trimmed copy —
 │                              #   the full archive is at the Zenodo DOI below)
 ├── data/raw/                  # Daily incidence datasets (flu, covid cases, deaths)
-├── results/figures/           # Generated figures (25 PDFs, committed as reference)
+├── results/figures/           # Generated figures (committed as reference)
+├── results/reporting_nash2023/  # Reporting-extension outputs
+│   ├── formal/                #   S0–S3 estimates, metadata, check report
+│   ├── constant_p/            #   constant-underreporting robustness sweep
+│   └── analysis/              #   analysis_report.md
+├── results/tables/            # reporting_summary.csv
 ├── docs/
 │   ├── CONVENTIONS.md         # ⚠ group-wide parameter conventions (seeds, time
 │   │                          #   indexing, SI variants, array shapes, metrics)
 │   ├── replication_notes.md   # bugs & semantics discovered in the original code
+│   ├── reporting_conventions_diff.md  # reporting-extension conventions (scenarios, seeds)
+│   ├── reporting_results_schema.md    # result CSV schema
+│   ├── reporting_robustness_theory.md # renewal-process theory of underreporting
+│   ├── nash2023_engine_provenance.md  # engine provenance vs A's commit
 │   └── 说明.md                # data & code provenance (Chinese)
-└── tests/ notebooks/          # reserved for the extension work
+└── tests/                     # test_reporting.py (reporting model); notebooks/ reserved
+```
+
+## Reporting-Model Extension
+
+The extension studies how robust the EM estimator is when reported case counts are thinned by a time-varying reporting probability: `Y_t ~ Binomial(I_t, p_t)` with `I_t ~ Poisson(R_t Λ_t)`.
+
+- **Model** (`src/epiestim/reporting.py`): Binomial thinning + aligned weekly aggregation. Four scenarios — S0 (perfect, p=1), S1 (constant p=0.8), S2 (sudden 0.8→0.4 at day 35), S3 (gradual 0.8→0.4 over days 35–56).
+- **Simulation** (`experiments/extension/`): a 10-trajectory pilot and a 100-trajectory formal run with fixed seeds and exact reproducibility checks; outputs land in `results/reporting_nash2023/formal/`.
+- **Analysis** (`experiments/analysis/`): bias / RMSE / 95% credible-interval coverage of daily-reported vs weekly-EM estimates (`analyze_reporting.py`), plus a constant-underreporting robustness sweep at 20/40/60% (`robustness_constant_p.py`).
+- **Theory** (`docs/reporting_robustness_theory.md`): constant thinning preserves the epidemic growth rate, so R_t stays unbiased; only *time-varying* p_t biases it — which is exactly what S2/S3 vs S1 confirm numerically.
+
+Run the extension:
+
+```bash
+cd experiments/extension
+python run_reporting_nash2023_formal.py      # 100-trajectory formal run (S0–S3)
+python run_reporting_experiments.py          # per-scenario entry point
+
+cd ../analysis
+python analyze_reporting.py                  # bias / coverage figures + tables
+python robustness_constant_p.py              # constant-underreporting sweep
 ```
 
 ## Quick Start
@@ -84,7 +124,8 @@ re-estimation — a full fresh run takes ~1-2 h).
 
 All group members: read [docs/CONVENTIONS.md](docs/CONVENTIONS.md) before
 writing code that extends the replication — every parameter convention in it
-is fixed unless the whole group agrees to change it. See
-[docs/replication_notes.md](docs/replication_notes.md) for the known bugs in
+is fixed unless the whole group agrees to change it. The reporting extension
+adds its own conventions in [docs/reporting_conventions_diff.md](docs/reporting_conventions_diff.md).
+See [docs/replication_notes.md](docs/replication_notes.md) for the known bugs in
 the original R scripts and the EpiEstim version differences that the
 replication handles.
