@@ -161,10 +161,10 @@ def _make_figure(df, path):
     ax2.set_xticks(x)
     ax2.set_xticklabels([f"p = {p:g}\n（{round((1 - p) * 100)}% 漏报）"
                          for p in P_LEVELS])
-    ax2.set_ylim(0, 100)
+    ax2.set_ylim(0, 108)
     ax2.set_ylabel("95% 可信区间覆盖率 (%)")
     ax2.set_title("恒定漏报程度下的覆盖率", loc="left")
-    ax2.legend(fontsize=8, loc="lower left", ncol=2)
+    ax2.legend(fontsize=8, loc="upper right", ncol=2)
 
     fig.suptitle("小型稳健性分析：不同恒定漏报程度对 Rt 估计的影响", fontsize=11,
                  x=0.02, ha="left", color=INK)
