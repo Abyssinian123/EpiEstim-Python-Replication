@@ -28,12 +28,6 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-plt.rcParams.update({
-    "font.family": "sans-serif",
-    "font.sans-serif": ["Microsoft YaHei", "DejaVu Sans"],
-    "axes.unicode_minus": False,
-})
-
 from epiestim import discr_si, estimate_R, estimate_R_agg, simulate_incidence
 from epiestim.reporting import aggregate_incidence, apply_reporting
 
@@ -47,10 +41,36 @@ REPORTING_SEED = 4300      # one fixed seed for all levels -> only p varies
 P_LEVELS = (0.8, 0.6, 0.4)
 MEAN_SI, STD_SI = 3.6, 1.6
 
+SURFACE = "#fcfcfb"
+INK = "#0b0b0b"
+INK_2 = "#52514e"
+MUTED = "#898781"
+GRID = "#e1e0d9"
+AXIS = "#c3c2b7"
 DAILY = "#2a78d6"
 EM = "#eb6834"
-MUTED = "#898781"
-INK = "#0b0b0b"
+
+plt.rcParams.update({
+    "figure.facecolor": SURFACE,
+    "axes.facecolor": SURFACE,
+    "savefig.facecolor": SURFACE,
+    "text.color": INK,
+    "axes.labelcolor": INK_2,
+    "xtick.color": MUTED,
+    "ytick.color": MUTED,
+    "axes.edgecolor": AXIS,
+    "axes.linewidth": 0.8,
+    "grid.color": GRID,
+    "grid.linewidth": 0.6,
+    "font.family": "sans-serif",
+    "font.sans-serif": ["Microsoft YaHei", "DejaVu Sans"],
+    "axes.unicode_minus": False,
+    "font.size": 9,
+    "axes.titlesize": 10,
+    "legend.frameon": False,
+    "axes.grid": True,
+    "axes.axisbelow": True,
+})
 
 
 def _simulation_si():
@@ -118,12 +138,12 @@ def _make_figure(df, path):
                  (df.estimation_method == "weekly_em")]
         grp = sub.groupby("t_end")["bias"].mean()
         ax1.plot(grp.index, grp.values, color=color, linewidth=1.6,
-                 label=f"p = {p:g}（周度 EM）")
+                 label=f"p = {p:g}（{round((1 - p) * 100)}% 漏报）")
     ax1.axhline(0, color=MUTED, linewidth=1.0, zorder=0)
-    ax1.set_title("恒定漏报程度下的平均偏差（EM）", loc="left", fontsize=10)
+    ax1.set_title("恒定漏报程度下的平均偏差（周度 EM）", loc="left")
     ax1.set_xlabel("估计窗口结束日 t_end")
     ax1.set_ylabel("平均偏差  Mean(R) − 1.25")
-    ax1.legend(fontsize=8)
+    ax1.legend(fontsize=8, loc="lower left")
 
     # right: coverage per level
     cov = (df.groupby(["reporting_scenario", "estimation_method"])["covered"]
@@ -136,14 +156,15 @@ def _make_figure(df, path):
                     (cov.estimation_method == method)].covered.iloc[0]
                 for p in P_LEVELS]
         bars = ax2.bar(x + (i - 0.5) * width, vals, width, color=color, label=label)
-        ax2.bar_label(bars, fmt="%.1f%%", fontsize=7.5, padding=2)
-    ax2.axhline(95, color=MUTED, linewidth=1.0, linestyle=":")
+        ax2.bar_label(bars, fmt="%.1f%%", fontsize=7.5, color=INK_2, padding=2)
+    ax2.axhline(95, color=MUTED, linewidth=1.0, linestyle=":", zorder=0)
     ax2.set_xticks(x)
-    ax2.set_xticklabels([f"{p:g}\n（{int((1-p)*100)}% 漏报）" for p in P_LEVELS])
+    ax2.set_xticklabels([f"p = {p:g}\n（{round((1 - p) * 100)}% 漏报）"
+                         for p in P_LEVELS])
     ax2.set_ylim(0, 100)
     ax2.set_ylabel("95% 可信区间覆盖率 (%)")
-    ax2.set_title("恒定漏报程度下的覆盖率", loc="left", fontsize=10)
-    ax2.legend(fontsize=8, loc="lower left")
+    ax2.set_title("恒定漏报程度下的覆盖率", loc="left")
+    ax2.legend(fontsize=8, loc="lower left", ncol=2)
 
     fig.suptitle("小型稳健性分析：不同恒定漏报程度对 Rt 估计的影响", fontsize=11,
                  x=0.02, ha="left", color=INK)
